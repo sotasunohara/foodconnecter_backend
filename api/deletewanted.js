@@ -37,10 +37,10 @@ var api={
         var url_parse=url.parse(req.url,true);
         var param=url_parse.query;
         if(param.id==null || param.eventnum==null || param.foodname==null){
-            console.log("ぱらめーた");
             res.status(400).send();
         }
         else{
+            //クエリの書き込み
             var query="DELETE FROM dbo.eventfood WHERE eventfood.foodname=@foodname and eventfood.eventnum=@eventnum and eventfood.id=@id";
             
             mssql.connect(config,function(err){

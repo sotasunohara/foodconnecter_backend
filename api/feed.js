@@ -4,6 +4,25 @@ var mssql = require('mssql');
 var conf=require('../dbpass/dbpass.js');
 var config=conf.config;
 
+function updatedb(target_id,foodnum,request,callback){
+    request.input('target_id',mssql.NVarChar,target_id);
+    request.input('foodnum',mssql.Int,foodnum);
+    //相手が決まってなければ設定
+    request.query('UPDATE dbo.food SET target_id=@target_id Where foodnum=@foodnum and target_id IS NULL');
+    //ストリーミングを許可
+    request.stream=true;
+    //エラーの際
+    request.on('error',function(err){
+        callback("error")
+        return;
+    });
+    //処理終了後
+    request.on('done',function(resultValue){
+        callback("succeed");
+    });
+    
+}
+
 var api={
     "get": function (req, res, next) {
         //urlパース設定
@@ -24,13 +43,16 @@ var api={
                 }
                 else{
                     var request=new mssql.Request();
-                    request.input('target_id',mssql.NVarChar,target_id);
-                    request.input('foodnum',mssql.Int,foodnum);
-                    //相手が決まってなければ設定
-                    request.query('UPDATE dbo.food SET target_id=@target_id Where foodnum=@foodnum and target_id IS NULL',function(err,re){
-                        console.log(err);
+                    //テーブルの書き換え
+                    updatedb(target_id,foodnum,request,function(result){
+                        if(result=="succeed"){
+                            res.status(200).json({msg:result});                        
+                        } 
+                        else{
+                            res.status(400).json({msg:result});
+                        }
                     });
-                    res.status(200).json({msg:'succeed'});
+
                 }
 
             });
