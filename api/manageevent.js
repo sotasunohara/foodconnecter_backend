@@ -39,7 +39,7 @@ function selectevent(query,callback){
     
     request.on('done',function(returnValue){
         setTimeout(function() {
-            callback();
+            callback(i);
         }, 0);
         
     });    
@@ -57,7 +57,7 @@ function selectmember(query,callback){
     request.input("id",mssql.NVarChar,query.id);
     request.input("eventnum",mssql.Int,query.eventnum);
     request.query('select eventmember.id,uinfo.username From dbo.eventmember,dbo.uinfo WHERE eventmember.eventnum = @eventnum and eventmember.id=uinfo.id');
-    //request.query('select eventmember.id,uinfo.username From dbo.eventmember,dbo.uinfo WHERE eventmember.eventnum = @eventnum and eventmember.id=uinfo.id');
+    
     console.log("good");
     console.log("selectmember");
     
@@ -77,13 +77,8 @@ function selectmember(query,callback){
     });
     
     request.on('done',function(returnValue){
-        //console.log(result);
+        callback(member);
         
-        //console.log(member);
-        //result['members']=member;
-        setTimeout(function() {
-            callback(member);
-        }, 0);
     });    
 
 }
@@ -203,22 +198,30 @@ var api={
                 }
                 else{
                     //res.json(selectevent(mssql,query));
-                    //イベント情報
-                    selectevent(query,function(){
-                        //メンバー
-                        selectmember(query,function(member){
-                            result[0]['members']=member;
-                            //欲しい食べ物
-                            selectwanted(query,function(wanted){
-                                result[0]['wanted']=wanted;
-                                //提供済み
-                                selectgather(query,function(gather){
-                                    result[0]['food']=gather;
-                                    res.status(200).json(result);
-                                    //responsev=result;
-                                }); 
-                            });
-                        });
+                    //イベント情報 checkが0の時はイベントが存在しない
+                    selectevent(query,function(check){
+                        if(check==0){
+                            res.status(400).json({msg:"nothing"});
+                        }
+                        else{
+                            //メンバー
+                            selectmember(query,function(member){
+    
+                                result[0]['members']=member;
+                                
+                                //欲しい食べ物
+                                selectwanted(query,function(wanted){
+                                    result[0]['wanted']=wanted;
+                                    //提供済み
+                                    selectgather(query,function(gather){
+                                        result[0]['food']=gather;
+                                        res.status(200).json(result);
+                                        //responsev=result;
+                                    }); 
+                                });
+                            });                            
+                        }
+
 
                     }); 
                     

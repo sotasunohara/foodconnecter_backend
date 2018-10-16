@@ -36,6 +36,12 @@ var api={
                     request.on('row',function(row){
                         //行の取得
                         row.userid=row.id;
+                        row.num=row.eventnum;
+                        row.city=row.eventcity;
+                        row.place=row.eventplace;
+                        delete row.eventnum;
+                        delete row.eventcity;
+                        delete row.eventplace;
                         delete row.id;
                         result[i]=row;
                         i++;

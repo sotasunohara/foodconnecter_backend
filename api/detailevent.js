@@ -5,7 +5,6 @@ var conf=require('../dbpass/dbpass.js');
 var config=conf.config;
 
 var result=[];
-var member=[];
 var wanted=[];
 var gather=[];
 

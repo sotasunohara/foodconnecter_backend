@@ -4,6 +4,8 @@ var mssql = require('mssql');
 var conf=require('../dbpass/dbpass.js');
 var config=conf.config;
 
+
+
 var api={
     "get": function (req, res, next) {
         console.log(config);
@@ -66,10 +68,13 @@ var api={
             
                     request.on('done', function(returnValue) {
                         // 常時最後によばれる,テーブルの表示
-                        
-                        console.log(result);
+                        var valu=[];
+                        valu=result.sort(function(a,b) {
+                            return (a.datetime > b.datetime ? 1 : -1);
+                        });
+                        console.log(valu);
                         //res.status(200).json(result);
-                        res.status(200).json(result);
+                        res.status(200).json(valu);
                         
                     });                    
                 }
