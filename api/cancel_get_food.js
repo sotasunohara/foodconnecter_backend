@@ -9,7 +9,7 @@ function getcancel(request,body,query,callback){
     var i=0;
     request.input('id',mssql.NVarChar,body.id);
     request.input('foodnum',mssql.NVarChar,body.foodnum);
-    request.input(query);
+    request.query(query);
     request.stream=true;
 }
 
